@@ -124,7 +124,7 @@ class MY_Model extends CI_Model
     public function find($id = null)
     {
         if (empty($id)) return false;
-        return $this->table($this->getTableName())
+        return $this->table($this->table)
             ->where("`{$this->pk}` = '{$id}'")
             ->limit('1')
             ->select();
@@ -139,7 +139,7 @@ class MY_Model extends CI_Model
      */
     public function findBy($name, $value)
     {
-        return $this->table($this->getTableName())
+        return $this->table($this->table)
             ->where("`{$name}` = '{$value}'")
             ->select();
     }
@@ -158,7 +158,7 @@ class MY_Model extends CI_Model
      */
     public function findAll($condition = array())
     {
-        return $this->table($this->getTableName())
+        return $this->table($this->table)
             ->select($condition);
     }
 
@@ -169,14 +169,14 @@ class MY_Model extends CI_Model
      */
     public function add($data = null)
     {
-        return $this->table($this->getTableName())
+        return $this->table($this->table)
             ->insert($data);
     }
 
     /**
      * Update records with condition
-     * @param null $data
-     * @param null $where
+     * @param array $data
+     * @param string / array $where
      * @return mixed
      */
     public function save($data = null, $where = null)
@@ -307,7 +307,6 @@ class MY_Model extends CI_Model
      * Build a insert sql and send a db query
      * @access public
      * @param array $data
-     * @throws \Exception
      * @return array affective rows
      */
     public function insert($data = null)
@@ -315,7 +314,7 @@ class MY_Model extends CI_Model
         if (!empty($data) && is_array($data)) {
             $this->_data = $data;
         } else {
-            throw new Exception('insert data can not be empty', E_ERROR);
+            show_error('insert data can not be empty');
         }
         $sql = str_replace(array(
             '@TABLE',
@@ -334,7 +333,6 @@ class MY_Model extends CI_Model
      * @access public
      * @param array $data
      * @param array $where
-     * @throws Exception
      * @return array affective rows
      */
     public function update($data = null, $where = null)
@@ -369,7 +367,6 @@ class MY_Model extends CI_Model
      * Build a delete sql and send a db query
      * @access public
      * @param array $where
-     * @throws Exception
      * @return array affective rows
      */
     public function delete($where = null)
