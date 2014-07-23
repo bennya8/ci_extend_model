@@ -9,6 +9,7 @@ CI Model功能比较简单，使用起来比较不方便，重新封装个扩展
 
 如：购物车模型
 
+```php
 class cart_model extends MY_Model
 {
 	// 主键名称
@@ -18,6 +19,7 @@ class cart_model extends MY_Model
 	// 表前缀
 	public $tablePrefix = 'pre_';
 }
+```
 
 ## 增删改查 CRUD
 
