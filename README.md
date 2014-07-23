@@ -24,12 +24,14 @@ class cart_model extends MY_Model
 ## 增删改查 CRUD
 
 假设现有如下数据表：
+```shell
 Table User
 id INT PK AI
 username varchar
 password char
 email varchat
 member_level SMALLINT
+```
 
 ## 查询 SELECT
 
