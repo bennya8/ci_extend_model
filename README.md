@@ -43,7 +43,7 @@ member_level SMALLINT
 $this->find(1);
 ```
 ```sql
-生成SQL：SELECT * FROM User where id = '1' limit 1;
+SELECT * FROM User where id = '1' limit 1;
 ```
 例子2 可以直接设定查询条件后，用findAll方法查询，等效于例子1查询
 ```php
@@ -61,7 +61,7 @@ $this->getAll($condition);
 $this->field('username,password,email')->where("username = 'abc'")->limit(10)->findAll();
 ```
 ```sql
-生成SQL：SELECT username,password,email FROM {table} where `username` = 'abc' limit 10;
+SELECT username,password,email FROM {table} where `username` = 'abc' limit 10;
 ```
 
 例子2 可以直接设定查询条件后，使用findAll方法查询，等效于例子1查询
@@ -79,7 +79,7 @@ $this->getAll($condition);
 $this->table('pre_user')->select();
 ```
 ```sql
-生成SQL：SELECT * FROM pre_user;
+SELECT * FROM pre_user;
 ```
 
 # getByXXX 动态字段查询，使用当前表某列字段作为查询条件，查询方法名使用驼峰法
@@ -90,8 +90,8 @@ $this->getById(2);
 $this->getByMemberLevel(1);
 ```
 ```sql
-生成SQL：SELECT * FROM pre_user where `id` = '2';
-生成SQL：SELECT * FROM pre_user where `member_level` = '2';
+SELECT * FROM pre_user where `id` = '2';
+SELECT * FROM pre_user where `member_level` = '2';
 ```
 
 ## 插入 INSERT
@@ -111,7 +111,7 @@ $data[] = array(
 $this->add(data);
 ```
 ```sql
-生成SQL：INSERT INTO pre_user (username,password) VALUES ('cartman','artman password'),('stan','stan password');
+INSERT INTO pre_user (username,password) VALUES ('cartman','artman password'),('stan','stan password');
 ```
 
 ## 更新 UPDATE
@@ -143,7 +143,7 @@ $where = array(
 $this->save($where);
 ```
 ```sql
-生成SQL：DELETE FROM pre_user WHERE `id` = 'cartman';
+DELETE FROM pre_user WHERE `id` = 'cartman';
 ```
 
 ## SQL语句查询
