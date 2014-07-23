@@ -61,7 +61,7 @@ $this->getAll($condition);
 $this->field('username,password,email')->where("username = 'abc'")->limit(10)->findAll();
 ```
 ```sql
-SELECT username,password,email FROM {table} where `username` = 'abc' limit 10;
+SELECT username,password,email FROM pre_user where `username` = 'abc' limit 10;
 ```
 
 例子2 可以直接设定查询条件后，使用findAll方法查询，等效于例子1查询
@@ -118,7 +118,8 @@ INSERT INTO pre_user (username,password) VALUES ('cartman','artman password'),('
 
 ***(bool/array) save($data,$where) 更新一条或多条数据***
 
-例子1：
+例子：
+```php
 $data = array(
 	'member_level' => 999
 );
@@ -126,10 +127,11 @@ $where = array(
 	'id' => 'cartman'
 );
 $this->save($data,$where);
-
-生成SQL：
+```
+```sql
 UPDATE SET pre_user `member_level` = '999'
 WHERE `id` = 'cartman';
+```
 
 ## 删除 DELETE
 
@@ -162,7 +164,7 @@ DELETE FROM pre_user WHERE `id` = 'cartman';
 
 ***(bool) commit() 提交一个事务***
 
-***(bool) rollback() 回滚一个事务 ***
+***(bool) rollback() 回滚一个事务***
 
 
 
