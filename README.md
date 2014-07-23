@@ -25,12 +25,21 @@ class cart_model extends MY_Model
 
 假设现有如下数据表：
 ```shell
-Table User
+Table user
 id INT PK AI
-username varchar
-password char
-email varchat
+username VARCHAR
+password VARCHAR
+email VARCHAR
 member_level SMALLINT
+
+Table user_data
+id INT PK AI
+user_id INT FK
+birthday VARCHAR
+mobile VARCHAR
+address VARCHAR
+zipcode VARCHAR
+
 ```
 
 ## 查询 SELECT
@@ -63,13 +72,36 @@ $this->field('username,password,email')->where("username = 'abc'")->limit(10)->f
 ```sql
 SELECT username,password,email FROM pre_user where `username` = 'abc' limit 10;
 ```
+```php
+$this->field('count(member_level)')->group('member_level')->findAll();
+```
+
+```sql
+SELECT count(member_level) FROM pre_user GROUP BY member_level;
+```
+```php
+$this->field('u.username,ud.birthday,ud.mobile')
+->table('pre_user as u')
+->join('left join pre_user_data as ud')
+->where("u.member_level = '1'")
+->limit(20)
+->order('u.username DESC')
+->findAll();
+```
+```sql
+SELECT u.username.ud.birthday,ud.mobile 
+LEFT JOIN pre_user_data AS ud
+WHERE u.member_levle = '1'
+LIMIT 20
+ORDER BY u.username DESC;
+```
 
 例子2 可以直接设定查询条件后，使用findAll方法查询，等效于例子1查询
 ```php
 $condition['field'] = 'username,password,email';
 $condition['where'] = "username = 'abc'";
 $condition['limit'] = 10;
-$this->getAll($condition);
+$this->findAll($condition);
 ```
 
 ***(bool/array) select($condition)方法，等效于findAll()方法，注意的是，select方法不会设定默认表名称。***
@@ -169,7 +201,7 @@ DELETE FROM pre_user WHERE `id` = 'cartman';
 
 ***(int) affectedRows() 获取最新一次查询受影响行数***
 
-## 事务（注：事务需表引擎支持，下一版将加入事务隔离级别设置）
+## 事务（注：事务需表引擎支持）
 
 ***(bool) begin() 关闭自动提交，开启事务***
 
