@@ -38,9 +38,10 @@ member_level SMALLINT
 ```php
 $this->find(1);
 ```
-生成SQL：SELECT * FROM User where `id` = '1' limit 1;
-
-**例子2 可以直接设定查询条件后，用findAll方法查询，等效于例子1查询**
+```sql
+生成SQL：SELECT * FROM User where id = '1' limit 1;
+```
+例子2 可以直接设定查询条件后，用findAll方法查询，等效于例子1查询
 ```php
 $condition['field'] = 'username,password,email';
 $condition['where'] = "username = 'abc'";
@@ -49,37 +50,52 @@ $this->getAll($condition);
 ```
 
 ## (bool/array) findAll($condition) ，根据设置查询条件查询多条记录，支持链式调用。
-（可配合 field(),table(),where(),join(),group(),limit(),order() 链式方法使用）
 
 例子1 使用链式方法和findAll方法查询
+（可配合 field(),table(),where(),join(),group(),limit(),order() 链式方法使用）
+```php
 $this->field('username,password,email')->where("username = 'abc'")->limit(10)->findAll();
+```
+```sql
 生成SQL：SELECT username,password,email FROM {table} where `username` = 'abc' limit 10;
+```
 
 例子2 可以直接设定查询条件后，使用findAll方法查询，等效于例子1查询
+```php
 $condition['field'] = 'username,password,email';
 $condition['where'] = "username = 'abc'";
 $condition['limit'] = 10;
 $this->getAll($condition);
+```
 
 ## (bool/array) select($condition)方法，等效于findAll()方法，注意的是，select方法不会设定默认表名称。
 
 例子：
+```php
 $this->table('pre_user')->select();
+```
+```sql
 生成SQL：SELECT * FROM pre_user;
+```
 
 # getByXXX 动态字段查询，使用当前表某列字段作为查询条件，查询方法名使用驼峰法
 
-例子1：
+例子：
+```php
 $this->getById(2);
-生成SQL：SELECT * FROM pre_user where `id` = '2';
 $this->getByMemberLevel(1);
+```
+```sql
+生成SQL：SELECT * FROM pre_user where `id` = '2';
 生成SQL：SELECT * FROM pre_user where `member_level` = '2';
+```
 
 ## 插入 INSERT
 
-## (bool/array) add($data) 插入一条或多条数据
+*** (bool/array) add($data) 插入一条或多条数据***
 
-例子1：
+例子：
+```php
 $data[] = array(
 	'username' => 'cartman',
 	'password' => 'cartman password'
@@ -89,15 +105,14 @@ $data[] = array(
 	'password' => 'stan password'
 );
 $this->add(data);
-
-生成SQL：
-INSERT INTO pre_user (username,password) VALUES 
-('cartman','artman password'),
-('stan','stan password');
+```
+```sql
+生成SQL：INSERT INTO pre_user (username,password) VALUES ('cartman','artman password'),('stan','stan password');
+```
 
 ## 更新 UPDATE
 
-(bool/array) save($data,$where) 更新一条或多条数据
+***(bool/array) save($data,$where) 更新一条或多条数据***
 
 例子1：
 $data = array(
@@ -116,14 +131,15 @@ WHERE `id` = 'cartman';
 
 ## (bool/array) remove($where) 删除一条或多条数据
 
-例子1：
+例子：
 ```php
 $where = array(
 	'id' => 'cartman'
 );
-
 $this->save($where);
-DELETE FROM pre_user WHERE `id` = 'cartman';
+```
+```sql
+生成SQL：DELETE FROM pre_user WHERE `id` = 'cartman';
 ```
 
 ## SQL语句查询
