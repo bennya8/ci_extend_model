@@ -72,7 +72,7 @@ $condition['limit'] = 10;
 $this->getAll($condition);
 ```
 
-** (bool/array) select($condition)方法，等效于findAll()方法，注意的是，select方法不会设定默认表名称。**
+***(bool/array) select($condition)方法，等效于findAll()方法，注意的是，select方法不会设定默认表名称。***
 
 例子：
 ```php
@@ -82,7 +82,7 @@ $this->table('pre_user')->select();
 SELECT * FROM pre_user;
 ```
 
-**(bool/array) getByXXX($value) 动态字段查询，使用当前表某列字段作为查询条件，查询方法名使用驼峰法**
+***(bool/array) getByXXX($value) 动态字段查询，使用当前表某列字段作为查询条件，查询方法名使用驼峰法***
 
 例子：
 ```php
