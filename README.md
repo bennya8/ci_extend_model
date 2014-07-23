@@ -124,13 +124,19 @@ $data = array(
 	'member_level' => 999
 );
 $where = array(
-	'id' => 'cartman'
+	'id' => array('eq','1','and'),
+	'username' => array('eq','cartman')
 );
 $this->save($data,$where);
+
+$this->where($where)->save($data);
+
+$this->where("id = '1' AND username = 'cartman'")->save($data);
+
 ```
 ```sql
 UPDATE SET pre_user `member_level` = '999'
-WHERE `id` = 'cartman';
+WHERE `id` = '1' AND `username` = 'cartman';
 ```
 
 ## 删除 DELETE
@@ -142,7 +148,12 @@ WHERE `id` = 'cartman';
 $where = array(
 	'id' => 'cartman'
 );
-$this->save($where);
+
+$this->remove($where);
+
+$this->where($where)->remove();
+
+$this->where("id = 'cartman'")->remove();
 ```
 ```sql
 DELETE FROM pre_user WHERE `id` = 'cartman';
