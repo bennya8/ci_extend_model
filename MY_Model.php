@@ -49,7 +49,7 @@ class MY_Model extends CI_Model
      * SELECT statement template
      * @var string
      */
-    private $_select = 'SELECT @FIELD FROM @TABLE @JOIN@WHERE@GROUP@ORDER@LIMIT';
+    private $_select = 'SELECT @FIELD FROM @TABLE @JOIN @WHERE @GROUP @HAVING @ORDER @LIMIT';
 
     /**
      * INSERT statement template
@@ -85,7 +85,7 @@ class MY_Model extends CI_Model
      * Available chains method
      * @var array
      */
-    private $_chains = array('table', 'field', 'select', 'update', 'insert', 'where', 'join', 'group', 'order', 'limit');
+    private $_chains = array('table', 'field', 'select', 'update', 'insert', 'where', 'join', 'group', 'having', 'order', 'limit');
 
     /**
      * Database instance
@@ -124,10 +124,8 @@ class MY_Model extends CI_Model
     public function find($id = null)
     {
         if (empty($id)) return false;
-        return $this->table($this->table)
-            ->where("`{$this->pk}` = '{$id}'")
-            ->limit('1')
-            ->select();
+        $result = $this->table($this->getTableName())->where("`{$this->pk}` = '{$id}'")->limit(1)->select();
+        return $result && isset($result[0]) ? $result[0] : array();
     }
 
     /**
@@ -139,9 +137,25 @@ class MY_Model extends CI_Model
      */
     public function findBy($name, $value)
     {
-        return $this->table($this->table)
-            ->where("`{$name}` = '{$value}'")
-            ->select();
+        return $this->table($this->getTableName())->where("`{$name}` = '{$value}'")->select();
+    }
+
+    /**
+     * Find records with given condition (support chains invoke)
+     * @example:
+     * $this->table($table) [optional] table name will be automatic set before method invoke
+     *      ->where($where)
+     *      ->join($group)
+     *      ->limit($limit)
+     *      ->findAll();
+     * @param array $condition
+     * @param array $condition
+     * @return mixed
+     */
+    public function findOne($condition = array())
+    {
+        $result = $this->table($this->getTableName())->limit(1)->select($condition);
+        return $result && isset($result[0]) ? $result[0] : array();
     }
 
     /**
@@ -158,8 +172,7 @@ class MY_Model extends CI_Model
      */
     public function findAll($condition = array())
     {
-        return $this->table($this->table)
-            ->select($condition);
+        return $this->table($this->getTableName())->select($condition);
     }
 
     /**
@@ -169,8 +182,7 @@ class MY_Model extends CI_Model
      */
     public function add($data = null)
     {
-        return $this->table($this->table)
-            ->insert($data);
+        return $this->table($this->getTableName())->insert($data);
     }
 
     /**
@@ -179,10 +191,9 @@ class MY_Model extends CI_Model
      * @param string / array $where
      * @return mixed
      */
-    public function save($data = null, $where = null)
+    public function save($where = null, $data = null)
     {
-        return $this->table($this->table)
-            ->update($data, $where);
+        return $this->table($this->getTableName())->update($data, $where);
     }
 
     /**
@@ -192,8 +203,7 @@ class MY_Model extends CI_Model
      */
     public function remove($where = null)
     {
-        return $this->table($this->getTableName())
-            ->delete($where);
+        return $this->table($this->getTableName())->delete($where);
     }
 
     /**
@@ -230,7 +240,7 @@ class MY_Model extends CI_Model
      */
     public function commit()
     {
-        return $this->_db->commit();
+        return $this->_db->trans_commit();
     }
 
     /**
@@ -239,7 +249,7 @@ class MY_Model extends CI_Model
      */
     public function rollback()
     {
-        return $this->_db->rollback();
+        return $this->_db->trans_rollback();
     }
 
     /**
@@ -248,7 +258,6 @@ class MY_Model extends CI_Model
      */
     public function begin()
     {
-        $this->_db->trans_off();
         return $this->_db->trans_start();;
     }
 
@@ -287,6 +296,7 @@ class MY_Model extends CI_Model
             '@JOIN',
             '@WHERE',
             '@GROUP',
+            '@HAVING',
             '@ORDER',
             '@LIMIT'
         ), array(
@@ -295,10 +305,10 @@ class MY_Model extends CI_Model
             $this->parseJoin(),
             $this->parseWhere(),
             $this->parseGroup(),
+            $this->parseHaving(),
             $this->parseOrder(),
             $this->parseLimit()
         ), $this->_select);
-
         $this->_condition = array();
         return $this->query($sql);
     }
@@ -512,7 +522,7 @@ class MY_Model extends CI_Model
                                 $where = ' = ';
                         }
                         $logic = isset($v[2]) ? ' ' . $v[2] : '';
-                        $parsedWhere .= $k . $where . $v[1] . $logic . ' ';
+                        $parsedWhere .= $k . $where . '\'' . $v[1] . '\'' . $logic . ' ';
                     }
                 }
             }
@@ -575,6 +585,22 @@ class MY_Model extends CI_Model
     }
 
     /**
+     * Convert having data to sql segment
+     * @access protected
+     * @return string
+     */
+    protected function parseHaving()
+    {
+        $parsedOrder = '';
+        if ($this->checkCondition('having')) {
+            if (is_string($this->_condition['having'])) {
+                $parsedOrder = 'HAVING ' . $this->_condition['having'];
+            }
+        }
+        return $parsedOrder;
+    }
+
+    /**
      * Convert order data to sql segment
      * @access protected
      * @return string
@@ -632,6 +658,8 @@ class MY_Model extends CI_Model
 
     /**
      * Chains invoke mechanism
+     * @param string $method
+     * @param array $args
      */
     public function __call($method, $args = array())
     {
