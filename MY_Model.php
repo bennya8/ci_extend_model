@@ -674,8 +674,7 @@ class MY_Model extends CI_Model
                 return false;
             }
         } elseif (method_exists($this->_db, $method)) {
-            $reflectMethod = new ReflectionMethod($this->_db, $method);
-            $reflectMethod->invokeArgs($this->_db, $args);
+            return call_user_func(array($this->_db, $method), $args);
         } else {
             show_error('invoke not exists method');
         }
