@@ -124,7 +124,7 @@ class MY_Model extends CI_Model
     public function find($id = null)
     {
         if (empty($id)) return false;
-        $result = $this->table($this->getTableName())->where("`{$this->pk}` = '{$id}'")->limit(1)->select();
+        $result = $this->where("`{$this->pk}` = '{$id}'")->limit(1)->select();
         return $result && isset($result[0]) ? $result[0] : array();
     }
 
@@ -137,7 +137,7 @@ class MY_Model extends CI_Model
      */
     public function findBy($name, $value)
     {
-        return $this->table($this->getTableName())->where("`{$name}` = '{$value}'")->select();
+        return $this->where("`{$name}` = '{$value}'")->select();
     }
 
     /**
@@ -154,7 +154,7 @@ class MY_Model extends CI_Model
      */
     public function findOne($condition = array())
     {
-        $result = $this->table($this->getTableName())->limit(1)->select($condition);
+        $result = $this->limit(1)->select($condition);
         return $result && isset($result[0]) ? $result[0] : array();
     }
 
@@ -172,9 +172,6 @@ class MY_Model extends CI_Model
      */
     public function findAll($condition = array())
     {
-        if (empty($this->_condition['table'])) {
-            $this->setCondition('table', $this->getTableName());
-        }
         return $this->select($condition);
     }
 
@@ -185,23 +182,17 @@ class MY_Model extends CI_Model
      */
     public function add($data = null)
     {
-        if (empty($this->_condition['table'])) {
-            $this->setCondition('table', $this->getTableName());
-        }
         return $this->insert($data);
     }
 
     /**
      * Update records with condition
-     * @param array $data
      * @param string / array $where
+     * @param array $data
      * @return mixed
      */
     public function save($where = null, $data = null)
     {
-        if (empty($this->_condition['table'])) {
-            $this->setCondition('table', $this->getTableName());
-        }
         return $this->update($data, $where);
     }
 
@@ -212,9 +203,6 @@ class MY_Model extends CI_Model
      */
     public function remove($where = null)
     {
-        if (empty($this->_condition['table'])) {
-            $this->setCondition('table', $this->getTableName());
-        }
         return $this->delete($where);
     }
 
@@ -472,6 +460,9 @@ class MY_Model extends CI_Model
      */
     protected function parseTable()
     {
+        if (empty($this->_condition['table'])) {
+            $this->setCondition('table', $this->getTableName());
+        }
         $parseTable = '';
         if ($this->checkCondition('table')) {
             if (is_string($this->_condition['table'])) {
