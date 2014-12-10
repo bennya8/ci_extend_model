@@ -172,7 +172,10 @@ class MY_Model extends CI_Model
      */
     public function findAll($condition = array())
     {
-        return $this->table($this->getTableName())->select($condition);
+        if (empty($this->_condition['table'])) {
+            $this->setCondition('table', $this->getTableName());
+        }
+        return $this->select($condition);
     }
 
     /**
@@ -182,7 +185,10 @@ class MY_Model extends CI_Model
      */
     public function add($data = null)
     {
-        return $this->table($this->getTableName())->insert($data);
+        if (empty($this->_condition['table'])) {
+            $this->setCondition('table', $this->getTableName());
+        }
+        return $this->insert($data);
     }
 
     /**
@@ -193,7 +199,10 @@ class MY_Model extends CI_Model
      */
     public function save($where = null, $data = null)
     {
-        return $this->table($this->getTableName())->update($data, $where);
+        if (empty($this->_condition['table'])) {
+            $this->setCondition('table', $this->getTableName());
+        }
+        return $this->update($data, $where);
     }
 
     /**
@@ -203,7 +212,10 @@ class MY_Model extends CI_Model
      */
     public function remove($where = null)
     {
-        return $this->table($this->getTableName())->delete($where);
+        if (empty($this->_condition['table'])) {
+            $this->setCondition('table', $this->getTableName());
+        }
+        return $this->delete($where);
     }
 
     /**
@@ -285,7 +297,7 @@ class MY_Model extends CI_Model
      * @param array $condition
      * @return array query result
      */
-    public function select($condition = array())
+    protected function select($condition = array())
     {
         if (!empty($condition) && is_array($condition)) {
             $this->_condition = array_merge($condition, $this->_condition);
@@ -319,7 +331,7 @@ class MY_Model extends CI_Model
      * @param array $data
      * @return array affective rows
      */
-    public function insert($data = null)
+    protected function insert($data = null)
     {
         if (!empty($data) && is_array($data)) {
             $this->_data = $data;
@@ -345,13 +357,14 @@ class MY_Model extends CI_Model
      * @param array $where
      * @return array affective rows
      */
-    public function update($data = null, $where = null)
+    protected function update($data = null, $where = null)
     {
-        $this->setCondition('where', $where);
+        if (!empty($where)) {
+            $this->setCondition('where', $where);
+        }
         if (empty($this->_condition['where'])) {
             show_error('execute an update statement without setting where condition');
         }
-
         if (!empty($data) && is_array($data)) {
             $this->_data = $data;
         } else {
@@ -379,10 +392,12 @@ class MY_Model extends CI_Model
      * @param array $where
      * @return array affective rows
      */
-    public function delete($where = null)
+    protected function delete($where = null)
     {
-        $this->setCondition('where', $where);
-        if ($this->safe && empty($this->_condition['where'])) {
+        if (!empty($where)) {
+            $this->setCondition('where', $where);
+        }
+        if (empty($this->_condition['where'])) {
             show_error('execute a delete statement without setting where condition');
         }
         $sql = str_replace(array(
@@ -660,6 +675,7 @@ class MY_Model extends CI_Model
      * Chains invoke mechanism
      * @param string $method
      * @param array $args
+     * @return bool|mixed
      */
     public function __call($method, $args = array())
     {
