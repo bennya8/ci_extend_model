@@ -492,19 +492,9 @@ class MY_Model extends CI_Model
                         switch (strtolower($v[0])) {
                             case 'in':
                                 $where = ' IN ';
-                                if (is_array($v[1])) {
-                                    $v[1] = '(\'' . implode('\',\'', $v[1]) . '\')';
-                                } else if (is_string($v[1])) {
-                                    $v[1] = '(' . $v[1] . ')';
-                                }
                                 break;
                             case 'notin':
                                 $where = ' NOT IN ';
-                                if (is_array($v[1])) {
-                                    $v[1] = '(\'' . implode('\',\'', $v[1]) . '\')';
-                                } else if (is_string($v[1])) {
-                                    $v[1] = '(' . $v[1] . ')';
-                                }
                                 break;
                             case 'neq':
                                 $where = ' != ';
@@ -527,8 +517,19 @@ class MY_Model extends CI_Model
                             default:
                                 $where = ' = ';
                         }
+                        if (strtolower($v[0] == 'in') || strtolower($v[0] == 'notin')) {
+                            if (is_array($v[1])) {
+                                $v[1] = '(\'' . implode('\',\'', $v[1]) . '\')';
+                            } else if (is_string($v[1])) {
+                                $v[1] = '(' . $v[1] . ')';
+                            }
+                        } else {
+                            if (is_string($v[1])) {
+                                $v[1] = '\'' . $v[1] . '\'';
+                            }
+                        }
                         $logic = isset($v[2]) ? ' ' . $v[2] : '';
-                        $parsedWhere .= $k . $where . '\'' . $v[1] . '\'' . $logic . ' ';
+                        $parsedWhere .= $k . $where . $v[1] . $logic . ' ';
                     }
                 }
             }
